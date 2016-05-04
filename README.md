@@ -7,7 +7,7 @@
 
 ## Intro
 
-Objects have both data and behavoir. So far, we've only learned how to store data in objects. But have no fear, objects in JavaScript can also contain behavior.
+Objects have both data and behavior. So far, we've only learned how to store data in objects. But have no fear, objects in JavaScript can also contain behavior.
 
 ## Actions on Single Object
 
@@ -66,7 +66,7 @@ betsy = new User("Betsy", "betsy@flatironschool.com")
 
 george = new User("George", "george@me.com")
 ```
-We can have the user's greet us too:
+We can have the users greet us too:
 
 ```js
 carl.sayHello();
@@ -104,3 +104,5 @@ For all intents and purposes we've created a JS class that will behave just like
 
 + [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 <p data-visibility='hidden'>View <a href='https://learn.co/lessons/js-object-methods-readme'>Object Methods in JS</a> on Learn.co and start learning to code for free.</p>
+
+<p class='util--hide'>View <a href='https://learn.co/lessons/js-object-methods-readme'>Object Methods in JS</a> on Learn.co and start learning to code for free.</p>
