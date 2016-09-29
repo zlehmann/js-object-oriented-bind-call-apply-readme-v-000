@@ -157,8 +157,8 @@ var t = new Teacher("Tom", "tom@geocities.edu")
 t.sayHello()
 ```
 
-Here, we've *extended*, or inherited from `User` when creating new class
-`Teacher`. We also created an *override* to the `sayHello` method so
+Here, we've *extended*, or inherited from `User` when creating the new
+`Teacher` class. We also created an *override* to the `sayHello` method so
 that it would reflect our teacher object better.
 
 If you look at the line `super.sayHello()`, what we're doing there is
@@ -182,5 +182,3 @@ extend classes using it.
 + [MDN: Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
 
 <p data-visibility='hidden'>View <a href='https://learn.co/lessons/js-object-methods-readme'>Object Methods in JS</a> on Learn.co and start learning to code for free.</p>
-
-<p class='util--hide'>View <a href='https://learn.co/lessons/js-object-methods-readme'>Object Methods in JS</a> on Learn.co and start learning to code for free.</p>
