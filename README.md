@@ -1,92 +1,32 @@
-# Object Methods and Classes
+# Using Classes in Javascript
 
 ## Objectives
-+ Explain what a method is and the difference between a method and a function.
-+ Add an action to a constructor function.
-+ Explain what `this` is in the context of an object.
-+ Create ES6 classes.
-+ Explain ES6 class inheritance with `extends`.
++ Understand how to use the class based syntax to declare a constructor for objects.
++ Understand the use of the constructor method in class based syntax.
++ Understand that methods declared with class based syntax are defined on the constructor's prototype.
 
-## Introduction
-Objects have both data and behavior. Data comes in the form of properties that store information, such as the `length` of an array, or the `name` of a Person. But objects also can have properties that store behavior, or functions, such as the `slice()` method of an array. When a function is a property of an object, it is known as a *method* of that object.
+### Our perfectly working code
 
-## Adding Methods to an Object
-Let's create a constructor function for some `User` objects.
+We currently have declared our constructor function such that it sets both properties and declares methods on newly created objects.  Moreover, we saw how we can reuse identical methods by defining methods on the constructor's prototype.  Our code looks like the following.
 
 ```js
-function User (name, email){
-  this.name = name;
-  this.email = email;
-}
-```
 
-How do we give our JavaScript user objects the ability to say hello?
-
-We already know how to create functions.  Now we need to attach a function to an object as a property.
-
-```js
-function User (name, email){
-  this.name = name;
-  this.email = email;
-  this.sayHello = function(){
-    console.log("Hello, my name is " + this.name);
+  function User(name, email) {
+    this.name = name;
+    this.email = email;
   }
-}
+
+  User.prototype.sayHello = function(){
+    console.log(`Hello everybody, my name is ${this.name}`);
+  }
+
+  let sarah = new User('sarah', 'sarah@gmail.com')
+
+  sarah.sayHello()
+  // "Hello everybody, my name is sarah!"
 ```
 
-We've now added the `sayHello` method to our `User` constructor function. Because a method is just a function that is attached to an object via a property, `sayHello` is a method. We call `User` a function, and not a method, because it's a standalone function and not a property of any object.
-
-It's a semantic distinction. All methods are also functions. We just use "method" as a convention when we communicate that lets other people know that we mean a function that is part of an object.
-
-It's important to note that we use `this` twice in relation to the `sayHello` method. We use it once: `this.sayHello`, where `this` is referencing the object we'll create (as long as we invoke the function with the `new` keyword).  The `this` keyword is probably the most confusing concept in JS so for now let's just assume it works like Ruby's `self` and refers to the instance of the object we're refering to.
-
-Let's make a few users:
-
-```js
-carl = new User("Carl", "sparkles@aol.com");
-
-betsy = new User("Betsy", "betsy@flatironschool.com")
-
-george = new User("George", "george@me.com")
-```
-We can have the users greet us too:
-
-```js
-carl.sayHello();
-// prints "Hello, my name is Carl" to the console
-betsy.sayHello();
-// prints "Hello, my name is Betsy" to the console
-george.sayHello();
-// prints "Hello, my name is George" to the console
-```
-
-But there's a problem here. When we build the method directly into the constructor function like this, we're using a lot of space in memory. Every single time a `User` object is created and stored in memory, the `sayHello` function is created and stored in memory with it. What if you're Facebook and have 1.19 billion active users a month? If you were to instantiate all those users at once, you'd be recreating that function in memory 1.19 billion times! (Incidentally, this is how Ruby does it.)
-
-## Add Method to Prototype
-Javascript objects have something called a Prototype.  For now, we won't get into an extremely detailed discussion of what Prototypes are, but we will use them as a place to keep our "instance" methods.  In Javascript, when you call a property, the interpreter will look on the instance of the object for a property, and when it finds none, it will look at the Object's Prototype for that property.  If we've attached a function as the property of that name it will call that function in a similar way that Ruby's method lookup chain works.
-
-```js
-function User(name, email) {
-  this.name = name;
-  this.email = email;
-}
-
-User.prototype.sayHello = function() {
-  console.log("Hello, my name is "+ this.name);
-}
-
-var sarah = new User("sarah", "sarah@aol.com");
-
-sarah.sayHello();
-```
-
-For all intents and purposes, we've created a JS class following a common pattern that combines the use of constructor functions with extending behavior via the object's prototype. This works, but is incredibly verbose, and you always run the risk of forgetting to add methods to the prototype instead of directly to the constructor.
-
-It would be nice if there were an approach that allowed us to construct true *classes* while still taking advantage of the prototypal nature of JavaScript. But there's no way to do that.
-
-OR IS THERE?
-
-(There is.)
+It works fine, but its not very pretty.  The problem is that our constructor and use of prototypes are separated from one another.  We want a way to encase both the attributes and functionality produced from a constructor in one spot.  
 
 ## ES6 Classes
 ECMAScript 6 introduces the concept of a `class` to JavaScript that provides a handy shortcut for organizing our objects.
@@ -103,49 +43,117 @@ class User {
   }
 
   sayHello() {
-    console.log("Hello, my name is "+ this.name);
+    console.log(`Hello, my name is ${this.name}`);
   }
 }
 
-var sarah = new User("Sarah", "sarah@aol.com");
+var sarah = new User('sarah', 'sarah@gmail.com');
 sarah.sayHello();
 ```
 
-Instead of our `User` constructor function, we now have a `class User`. Within the body of the class, we can define a special function named `constructor` to be our constructor function. In the end, we still instantiate a `new User` the same way.
+Instead of our `User` constructor function, we now have a `class User`. Within the body of the class, we can define a special function named `constructor` which is run each time a new object is initialized from the User class. In the end, we still instantiate a `new User` the same way.
 
 We also define our `sayHello` function directly in the body of the class. However, unlike defining it in the constructor function, we can verify that `sayHello` is defined on the User prototype by examining `User.prototype`.
 
 ## ES6 Class Inheritance With extends
 
-We can also easily inherit from ES6 classes without having to go through the trouble of assigning `prototype` via `Object.create`.
+We can also easily inherit from ES6 classes.  Inheritance is used when we would like to reuse the same functionality from a previously defined class, but would like to extend that classes functionality.
 
-Say we want to create a `Teacher` class for our school system that inherits from `User`. We can just define a new class and use the `extends` keyword.
+For example, say we want to create a `Teacher` class, such that objects initialized from the Teacher class will inherit the same methods declared on the `User` class. We can just define a new class and use the `extends` keyword.
 
 ```js
 class Teacher extends User {
-    sayHello() {
-      super.sayHello()
-      console.log("I am a teacher");
-    }
+
 }
 
-var t = new Teacher("Tom", "tom@geocities.edu")
-t.sayHello()
+let tom = new Teacher("Tom", "tom@geocities.edu")
+tom.sayHello()
+// hello my name is Tom
 ```
 
-Here, we've *extended*, or inherited from `User` when creating the new `Teacher` class. We also created an *override* to the `sayHello` method so that it would reflect our teacher object better.
+Note that even though we have not defined any methods directly on the `Teacher` class, by using the extends keyword an instance of a Teacher shares has all of the same functionality of a newly created user.  We can also add new methods to a Teacher class that are not declared on a User.  For example, we can add a method called teachMath:
+
+```js
+class Teacher extends User {
+  teachMath(){
+    return `My name is ${this.name} and 1 + 1 is 2.`
+  }
+}
+
+let tom = new Teacher("Tom", "tom@geocities.edu")
+tom.sayHello()
+// hello my name is Tom
+
+tom.teachMath()
+// My name is Tom and 1 + 1 is 2.
+
+```
+
+Here, we've *extended*, or inherited from `User` when creating the new `Teacher` class. We also added a new method teachMath that available to Teacher objects but is not available to User objects.  We can override an inherited method simply by defining another method with the same name.
+
+```js
+class User {
+  constructor(name, email) {
+    this.name = name;
+    this.email = email;
+  }
+
+  sayHello() {
+    console.log(`Hello, my name is ${this.name}`);
+  }
+}
+
+class Teacher extends User {
+  sayHello(){
+    console.log('hello')
+  }
+}
+
+let fred = new User('fred', 'fred@gmail.com')
+fred.sayHello()
+// Hello, my name is fred
+
+let tom = new User('tom', 'tom@gmail.com')
+tom.sayHello()
+// hello
+```
+
+Finally, we can add onto the functionality of a method with the `super` method.
+
+```js
+class User {
+  constructor(name, email) {
+    this.name = name;
+    this.email = email;
+  }
+
+  sayHello() {
+    console.log(`Hello, my name is ${this.name}`);
+  }
+}
+
+
+class Teacher extends User {
+  sayHello(){
+    super.sayHello()
+    console.log('hello')
+  }
+}
+
+tom.sayHello()
+// Hello, my name is fred
+// hello
+```
 
 If you look at the line `super.sayHello()`, what we're doing there is calling the `sayHello` method of the *superclass*, or the class (`User`) that our `Teacher` class inherits from. We wanted to preserve the behavior that was already there and then add to it, so rather than repeat the code, the `super` object gives us access to it programmatically.
 
 ## Summary
 
-In this lesson, we've learned the differences between methods and functions, and seen how to add methods to objects through both the constructor and the prototype.
-
-We also explored the new `class` syntax of ES6 and how to create and extend classes using it.
+In this lesson, we explored the new `class` syntax of ES6 and how to create and extend classes using it.
 
 ## Resources
 
 + [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 + [MDN: Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
 
-<p data-visibility='hidden'>View <a href='https://learn.co/lessons/js-object-methods-readme'>Object Methods in JS</a> on Learn.co and start learning to code for free.</p>
+<p data-visibility='hidden'>View <a href='https://learn.co/lessons/js-classes-readme'>Classes in JS</a> on Learn.co and start learning to code for free.</p>
