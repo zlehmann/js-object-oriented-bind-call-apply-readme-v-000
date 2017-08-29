@@ -1,159 +1,129 @@
-# Using Classes in Javascript
+# Bind, Call, and Apply Readme
 
 ## Objectives
-+ Understand how to use the class based syntax to declare a constructor for objects.
-+ Understand the use of the constructor method in class based syntax.
-+ Understand that methods declared with class based syntax are defined on the constructor's prototype.
+1. Use `call()` and `apply()` to invoke a function with an explicit value for `this`
+2. Explain the difference between `call()` and `apply()` in the way you pass arguments to the target function.
+3. Use `bind()` to execute functions asynchronously
 
-### Our perfectly working code
-
-We currently have declared our constructor function such that it sets both properties and declares methods on newly created objects.  Moreover, we saw how we can reuse identical methods by defining methods on the constructor's prototype.  Our code looks like the following.
-
-```js
-
-  function User(name, email) {
-    this.name = name;
-    this.email = email;
-  }
-
-  User.prototype.sayHello = function(){
-    console.log(`Hello everybody, my name is ${this.name}`);
-  }
-
-  let sarah = new User('sarah', 'sarah@gmail.com')
-
-  sarah.sayHello()
-  // "Hello everybody, my name is sarah!"
-```
-
-It works fine, but its not very pretty.  The problem is that our constructor and use of prototypes are separated from one another.  We want a way to encase both the attributes and functionality produced from a constructor in one spot.  
-
-## ES6 Classes
-ECMAScript 6 introduces the concept of a `class` to JavaScript that provides a handy shortcut for organizing our objects.
-
-It's important to note that the `class` keyword doesn't actually turn JavaScript into a class-based object-oriented paradigm. It's just *syntactic sugar*, or a nice abstraction, over the prototypal object creation we've been doing.
-
-Let's convert our user to a class.
+## Alternate Ways to Invoke Functions
+In our exploration of `this`, we saw how it can change depending on how it is called.  Let's see a quick example:
 
 ```js
-class User {
-  constructor(name, email) {
-    this.name = name;
-    this.email = email;
-  }
+function greet() {
+  console.log(`my name is ${this.name}, hi!`);
+}
+greet()
+// "my name is , hi!"
 
-  sayHello() {
-    console.log(`Hello, my name is ${this.name}`);
-  }
+let person = {
+  name: 'bob'
+  greet: greet
 }
 
-var sarah = new User('sarah', 'sarah@gmail.com');
-sarah.sayHello();
+person.greet()
+// my name is bob, hi!
 ```
 
-Instead of our `User` constructor function, we now have a `class User`. Within the body of the class, we can define a special function named `constructor` which is run each time a new object is initialized from the User class. In the end, we still instantiate a `new User` the same way.
-
-We also define our `sayHello` function directly in the body of the class. However, unlike defining it in the constructor function, we can verify that `sayHello` is defined on the User prototype by examining `User.prototype`.
-
-## ES6 Class Inheritance With extends
-
-We can also easily inherit from ES6 classes.  Inheritance is used when we would like to reuse the same functionality from a previously defined class, but would like to extend that classes functionality.
-
-For example, say we want to create a `Teacher` class, such that objects initialized from the Teacher class will inherit the same methods declared on the `User` class. We can just define a new class and use the `extends` keyword.
+As we see above, when the `greet` function is invoked as a function, `this` is the global scope.  However, when greet is invoked as a method of an object `this` changes to equal that object receiving the method call.  One thing we have yet to explore, is how Javascript allows us to set `this` to equal whatever we want.  Let's look at that.
 
 ```js
-class Teacher extends User {
-
+function greet() {
+  console.log(`my name is ${this.name}, hi!`);
 }
 
-let tom = new Teacher("Tom", "tom@geocities.edu")
-tom.sayHello()
-// hello my name is Tom
-```
+let sally = {name: 'sally'}
 
-Note that even though we have not defined any methods directly on the `Teacher` class, by using the extends keyword an instance of a Teacher shares has all of the same functionality of a newly created user.  We can also add new methods to a Teacher class that are not declared on a User.  For example, we can add a method called teachMath:
+greet.apply(sally)
+// my name is sally, hi!
 
-```js
-class Teacher extends User {
-  teachMath(){
-    return `My name is ${this.name} and 1 + 1 is 2.`
-  }
-}
-
-let tom = new Teacher("Tom", "tom@geocities.edu")
-tom.sayHello()
-// hello my name is Tom
-
-tom.teachMath()
-// My name is Tom and 1 + 1 is 2.
+greet.call(sally)
+// my name is sally, hi!
 
 ```
 
-Here, we've *extended*, or inherited from `User` when creating the new `Teacher` class. We also added a new method teachMath that available to Teacher objects but is not available to User objects.  We can override an inherited method simply by defining another method with the same name.
+As you see above, we can use `call()` or `apply()` to invoke a function with an explicit value for `this`.  So, instead of invoking the `greet()` function directly, we're invoking the `call()` method or the `apply()` method of the `greet` function.  And yes, our `greet` function can have a method, because in JavaScript functions are first class objects.   
 
+So both `call` and `apply` give us a way to invoke a function and explicitly set `this` equal to the first argument of `call` or `apply`.  So then what's the difference between `call` and `apply`?
+
+#### Passing Arguments With call() and apply()
+
+The only real difference between `call` and `apply` is the way you pass arguments to the target function.
+
+Let's modify our `greet` function to be a little friendlier:
 ```js
-class User {
-  constructor(name, email) {
-    this.name = name;
-    this.email = email;
-  }
 
-  sayHello() {
-    console.log(`Hello, my name is ${this.name}`);
-  }
+function greet(customerOne, customerTwo) {
+  console.log(`Hi ${customerOne} and ${customerTwo}, my name is ${this.name}!`);
 }
-
-class Teacher extends User {
-  sayHello(){
-    console.log('hello')
-  }
-}
-
-let fred = new User('fred', 'fred@gmail.com')
-fred.sayHello()
-// Hello, my name is fred
-
-let tom = new User('tom', 'tom@gmail.com')
-tom.sayHello()
-// hello
 ```
 
-Finally, we can add onto the functionality of a method with the `super` method.
+Now, when we invoke `greet`, not only do we need to explicitly set `this`, but we also need to pass values for `customerOne` and `customerTwo`.
+
+Using `call`, we pass the object for `this` as the first argument, followed by any function arguments in order.
 
 ```js
-class User {
-  constructor(name, email) {
-    this.name = name;
-    this.email = email;
-  }
+let sally = {name: 'sally'}
 
-  sayHello() {
-    console.log(`Hello, my name is ${this.name}`);
-  }
+function greet(customerOne, customerTwo) {
+  console.log(`Hi ${customerOne} and ${customerTwo}, my name is ${this.name}!`);
 }
 
-
-class Teacher extends User {
-  sayHello(){
-    super.sayHello()
-    console.log('hello')
-  }
-}
-
-tom.sayHello()
-// Hello, my name is fred
-// hello
+greet.call(sally, "Terry", "George");
+// Hi Terry and George, my name is sally!
 ```
 
-If you look at the line `super.sayHello()`, what we're doing there is calling the `sayHello` method of the *superclass*, or the class (`User`) that our `Teacher` class inherits from. We wanted to preserve the behavior that was already there and then add to it, so rather than repeat the code, the `super` object gives us access to it programmatically.
+Great! Now we see the name and the message! What happens if we don't pass any arguments?
+
+```js
+greet.call(sally);
+// Hi undefined and undefined, my name is sally!
+```
+
+Okay, what about `apply`? So, this works very similar to `call`, except that `apply` only takes two arguments: the value of `this`, and then an *array* of arguments to pass to the target function. So to use `apply` with our new serve object, we'll need to pass that customer value inside an array.
+
+```js
+greet.apply(sally, ["Terry", "George"]);
+// Hi Terry and George, my name is sally!
+```
+
+Very similar, but we need to wrap the arguments to the `greet` function in brackets to make it an array.
+
+### bind()
+
+So far, we have been looking at `call` and `apply`, which both explicitly set `this` and then immediately execute the function call.
+
+Sometimes, however, we want to set the function's `this` value, but delay calling the function until later. For that, we use `bind()`.
+
+Using `bind` is similar to `call` in that the first argument will be the value for `this` in the target function, then any arguments for the target function come in order after that.  However, when we use `bind`, we create a *new function* the same capabilities as our original function.  The only difference is that the copied function has the `this` value set, and we can execute that copied function whenever.
+
+Try this out with our earlier example:
+
+```js
+let sally = {name: 'sally'}
+
+function greet(customer) {
+  console.log(`Hi ${customer}, my name is ${this.name}!`);
+}
+
+let newGreet = greet.bind(sally);
+
+newGreet('Bob')
+// Hi Bob, my name is sally!
+
+greet('Bob')
+// Hi Bob, my name is !
+```
+
+As you see from the above code, by calling `greet.bind(sally)` we return a new function that we then assign to the variable `newGreet`.  Invoking `newGreet` shows that the `this` object is bound to `sally`.  Note that the original `greet` function is unchanged, as shown by directly invoking our original `greet` function.  So `bind` does not change our original function.  Instead, it copies the function, and sets the copied function's `this` context to whatever is passed through as an argument to bind.  
 
 ## Summary
 
-In this lesson, we explored the new `class` syntax of ES6 and how to create and extend classes using it.
+We reviewed how `this` works for simple function calls. Then we saw how `call` and `apply` allow us to instantly execute functions while specifying the `this` value of the executed function.  Then we learned how to use `bind` to make copies of functions with a new `this` value bound to the copy of the function.
 
 ## Resources
 
-+ [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
-+ [MDN: Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+- [MDN: Function.prototype.call()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+- [MDN: Function.prototype.apply()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
+- [MDN: Function.prototype.bind()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
 
-<p data-visibility='hidden'>View <a href='https://learn.co/lessons/js-classes-readme'>Classes in JS</a> on Learn.co and start learning to code for free.</p>
+<p class='util--hide'>View <a href='https://learn.co/lessons/js-object-oriented-bind-call-apply-readme'>Javascript bind call and apply</a> on Learn.co and start learning to code for free.</p>
