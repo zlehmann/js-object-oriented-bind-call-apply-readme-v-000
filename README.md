@@ -16,7 +16,7 @@ greet()
 // "my name is , hi!"
 
 let person = {
-  name: 'bob'
+  name: 'bob',
   greet: greet
 }
 
@@ -24,7 +24,7 @@ person.greet()
 // my name is bob, hi!
 ```
 
-As we see above, when the `greet` function is invoked as a function, `this` is the global scope.  However, when greet is invoked as a method of an object `this` changes to equal that object receiving the method call.  One thing we have yet to explore, is how Javascript allows us to set `this` to equal whatever we want.  Let's look at that.
+As we see above, when the `greet` function is invoked as a function, `this` is the global scope.  However, when greet is invoked as a method of an object `this` changes to equal the object receiving the method call.  One thing we have yet to explore, is how Javascript allows us to set `this` to equal whatever we want.  Let's look at that.
 
 ```js
 function greet() {
@@ -115,6 +115,50 @@ greet('Bob')
 ```
 
 As you see from the above code, by calling `greet.bind(sally)` we return a new function that we then assign to the variable `newGreet`.  Invoking `newGreet` shows that the `this` object is bound to `sally`.  Note that the original `greet` function is unchanged, as shown by directly invoking our original `greet` function.  So `bind` does not change our original function.  Instead, it copies the function, and sets the copied function's `this` context to whatever is passed through as an argument to bind.  
+
+Sometimes, `bind` is also to preserve `this` when invoked in a callback function.  Let's see this.
+
+```js
+class User {
+  constructor(name, favoriteBand){
+    this.name = name
+    this.favoriteBand = favoriteBand
+  }
+  favoriteBandMatches(bands){
+    bands.filter(function(band){
+      return band == this.band
+    })
+  }
+}
+
+let billy = new Person('billy', 'paul simon')
+billy.favoriteBandListed(['paul simon', 'the kooks'])
+// Uncaught TypeError: Cannot read property 'band' of undefined
+```
+
+As you can see, the problem the code above runs into is that from inside the callback function, `this` becomes global.  To solve this, we can use `bind`.   
+
+```js
+class User {
+  constructor(name, favoriteBand){
+    this.name = name
+    this.favoriteBand = favoriteBand
+  }
+  favoriteBandMatches(bands){
+    // here this is the User instance
+    bands.filter(function(band){
+      // here, this is global
+      return band == this.band
+    }.bind(this))
+  }
+}
+
+let billy = new Person('billy', 'paul simon')
+billy.favoriteBandListed(['paul simon', 'the kooks'])
+// 'paul simon'
+```
+
+Let's see why the above code works.  The callback function is declared when the `favoriteBandMatches` method is invoked.  When the moment the method is invoked, `this` equals the user instance receiving the method call, and we bind the callback function to that user instance.  Then, from inside the `filter` method, the callback function is invoked - the context would be global here, except that the `this` is bound to `User` instance.
 
 ## Summary
 
