@@ -1,6 +1,8 @@
 tags:
-  - a tag
+  - bind
+  - call
+  - apply
 languages:
-  - a language
+  - javascript
 resources: 
   - 1
