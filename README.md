@@ -126,14 +126,14 @@ class User {
   }
   favoriteBandMatches(bands){
     bands.filter(function(band){
-      return band == this.band
+      return band == this.favoriteBand
     })
   }
 }
 
-let billy = new Person('billy', 'paul simon')
-billy.favoriteBandListed(['paul simon', 'the kooks'])
-// Uncaught TypeError: Cannot read property 'band' of undefined
+let billy = new User('billy', 'paul simon')
+billy.favoriteBandMatches(['paul simon', 'the kooks'])
+// Uncaught TypeError: Cannot read property 'favoriteBand' of undefined
 ```
 
 As you can see, the problem the code above runs into is that from inside the callback function, `this` becomes global.  To solve this, we can use `bind`.   
@@ -148,13 +148,13 @@ class User {
     // here this is the User instance
     bands.filter(function(band){
       // here, this is global
-      return band == this.band
+      return band == this.favoriteBand
     }.bind(this))
   }
 }
 
-let billy = new Person('billy', 'paul simon')
-billy.favoriteBandListed(['paul simon', 'the kooks'])
+let billy = new User('billy', 'paul simon')
+billy.favoriteBandMatches(['paul simon', 'the kooks'])
 // 'paul simon'
 ```
 
