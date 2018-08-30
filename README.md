@@ -158,7 +158,7 @@ billy.favoriteBandMatches(['paul simon', 'the kooks'])
 // 'paul simon'
 ```
 
-Let's see why the above code works.  The callback function is declared when the `favoriteBandMatches` method is invoked.  When the moment the method is invoked, `this` equals the user instance receiving the method call, and we bind the callback function to that user instance.  Then, from inside the `filter` method, the callback function is invoked - the context would be global here, except that the `this` is bound to `User` instance.
+Let's see why the above code works.  The callback function is declared when the `favoriteBandMatches` method is invoked.  When the method is invoked, `this` equals the user instance receiving the method call, and we bind the callback function to that user instance.  Then, from inside the `filter` method, the callback function is invoked - the context would be global here, except that the `this` is bound to `User` instance.
 
 ## Summary
 
