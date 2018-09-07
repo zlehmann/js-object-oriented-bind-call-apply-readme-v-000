@@ -174,10 +174,9 @@ greet.bind(sally)('Bob');
 
 But assigning this to a variable like we did with `newGreet` makes this easily
 **reusable** and **transferable**. In complex applications, there are times when
-it is better that `this` refers to the [execution context][exec] _we assign_.
-Until the introduction of [arrow functions][arrows], every new JavaScript
-function defined its own `this` value. Using `bind`, we can prevent this
-behavior.
+it is better that `this` refers to the context _we assign_. Until the
+introduction of [arrow functions][arrows], every new JavaScript function defined
+its own `this` value. Using `bind`, we can prevent this behavior.
 
 Let's imagine we want to create an app that matches user interests with keywords
 from upcoming events. We could create a `User` class and be able to assign
@@ -300,10 +299,6 @@ Let's see why the above code works. When the `matchInterests` method is invoked,
 `this` refers to the `User` instance context receiving the method call. We are
 in that context when our callback function is defined. Using `bind` here lets us
 keep `this` referring to the `User` context.
-
-From inside the `some` method, when the callback function is invoked - the
-context would be global, except that the `this` is already bound to the
-`User` instance.
 
 ## A Brief Look at Arrow Functions
 
