@@ -1,15 +1,19 @@
 # Bind, Call, and Apply Readme
 
-In this code along, we will be practicing the use of bind, call and apply. You
-can follow along using your browser's JS console, or use the provided `index.js`
-file to work in by opening `index.html` or running `httpserver`.
+In this code along, we will be practicing the use of `bind`, `call` and `apply`.
+
+You can follow along using your browser's JS console, or use `httpserver` to
+serve the provided `index.html`. The HTML file will automatically load
+`index.js` and edits you make there will be shown in your browser.
 
 ## Objectives
 
 1.  Use `call()` and `apply()` to invoke a function with an explicit value for
     `this`
 2.  Explain the difference between `call()` and `apply()` in the way you pass
-    arguments to the target function.
+    arguments to the target function
+3.  Use `bind()` to create new functions that are associated to specified
+    _contexts_
 3.  Use `bind()` to execute functions asynchronously
 
 ## Alternate Ways to Invoke Functions
@@ -22,30 +26,32 @@ browser's JS console to test for yourself:
 function greet() {
 	console.log(`my name is ${this.name}, hi!`);
 }
-greet();
-// my name is , hi!
+
+greet(); // my name is , hi!
 
 let person = {
 	name: 'Bob',
 	greet: greet
 };
 
-person.greet();
-// my name is Bob, hi!
+person.greet(); // my name is Bob, hi!
 ```
 
 We have a function, `greet`, that logs a string. Interpolated into this string
 is `this.name`. When the `greet` is invoked as a function, `this` is referring
-to the [global object][object], [window][window].
+to the [global object][object], [window][window]. We say that the _context_ for
+the `greet()` is `window`. In browser-based JavaScript, `window` is the
+"_default context_."
 
 However, when `greet` is invoked as a method of _an object_, `this` changes to
-refer to the object the method is invoked in. In the case of `person.greet`,
-`greet` is bound to the `person` object. This object has a `name` property set,
-so `this.name` will produce 'bob'.
+refer to the object the method is invoked in. That is the _context_
+automatically changes to be the containing object. Since `person` has a `name`
+property set, so `this.name` means the value 'bob'.
 
-But what if we wanted to write a function that was separate from a specific
-object? Javascript allows us to do this using the `call` and `apply` methods. We
-can use `call` and `apply` to set `this` to equal whatever we want:
+We've seen here that there are conditions where JavaScript will change the
+_context_ ("what `this` is set to) automatically. Developers can also force
+functions to be executed in other contexts.  Javascript allows us to do this
+using the `call` and `apply` methods.
 
 ```js
 function greet() {
@@ -61,22 +67,21 @@ greet.apply(sally);
 // my name is Sally, hi!
 ```
 
-As you see above, we can use `call` or `apply` to invoke a function with an
-explicit value for `this`. So, instead of invoking the `greet` function
-directly, we're invoking the `call` method or the `apply` method of the
-`greet` function. Our `greet` function can have a method, because in JavaScript
-functions are first class objects.
+As you see above, we can use `call` or `apply` to invoke a function with a
+specified _context_. The _context_ in which the function is to be run is passed
+in as the first argument to these methods.
 
-So both `call` and `apply` give us a way to invoke a function and explicitly set
-`this` equal to the first argument of `call` or `apply`. So then what's the
-difference between `call` and `apply`?
+> **NOTE:** Our `greet` function is actually an instance of a `Function` class.
+> Because of this a function instance _can also have methods_. Function's are
+> things that run, but also things like `{}` in JavaScript.
+
+Both `call` and `apply` give us a way to invoke a function and explicitly set
+its context (what `this` will equal) in thei first argument. The difference
+between the two is how arguments are passed to the function.
 
 #### Passing Arguments With `call` and `apply`
 
-The only real difference between `call` and `apply` is the way you pass
-arguments to the target function.
-
-Let's modify our `greet` function to be a little friendlier:
+Let's modify our `greet` function to be a little chattier:
 
 ```js
 function greet(customerOne, customerTwo) {
@@ -109,37 +114,31 @@ greet.call(sally);
 // Hi undefined and undefined, my name is Sally!
 ```
 
-Okay, what about `apply`? So, this works very similar to `call`, except that
-`apply` only takes two arguments: the value of `this`, and then an _array_ of
-arguments to pass to the target function. So to use `apply` with our new serve
-object, we'll need to pass that customer value inside an array.
+The call to `apply` works similarly to `call`, except that `apply` only takes
+two arguments: the value of `this`, and then an `Array` of arguments to pass to
+the function, like so:
 
 ```js
 greet.apply(sally, ['Terry', 'George']);
 // Hi Terry and George, my name is Sally!
 ```
 
-Very similar, but we need to wrap the arguments to the `greet` function in
-brackets to make it an array. You can remember the difference because `apply`
-takes an **array** (both begin with the letter a). You can use either `call` or
-`apply`. The only difference is stylistic.
+You can remember the difference because `apply` takes an **array** (both begin
+with the letter a). You can use either `call` or `apply`. The only difference
+is stylistic. Both exist because sometimes arguments need to be collected or
+bundled up (`apply`) versus passed directly (`call`).
 
 ### Introduce `bind`
 
 So far, we have been looking at `call` and `apply`, which both explicitly set
 `this` and then immediately execute the function call.
 
-Sometimes, however, we want to set the function's `this` value, but delay
-calling the function until later. For that, we use `bind()`.
+Sometimes, we want to take a function, associate it to a _context_ and return a
+"_context_-bound" version of the _original function_.
 
-Using `bind` is similar to `call` in that the first argument will be the value
-for `this` in the target function, then any arguments for the target function
-come in order after that. However, when we use `bind`, we create a _new
-function_ with the same capabilities as our original function. The only
-difference is that the copied function has the `this` value set, and we can
-execute that copied function whenever.
-
-Try this out with our earlier example:
+Once we have the "_context_-bound" version of the function we can call it with
+`(arguments, arguments, ...)` or `call()` or `apply()` without having to
+manually set the context. Let's see it in action.
 
 ```js
 let sally = { name: 'Sally' };
@@ -148,7 +147,7 @@ function greet(customer) {
 	console.log(`Hi ${customer}, my name is ${this.name}!`);
 }
 
-let newGreet = greet.bind(sally);
+let newGreet = greet.bind(sally); // newGreet is context-bound to sally
 
 newGreet('Bob');
 // Hi Bob, my name is Sally!
@@ -171,6 +170,10 @@ We can actually use bind and invoke immediately:
 greet.bind(sally)('Bob');
 // Hi Bob, my name is Sally!
 ```
+
+But this is just a noisy way of doing the same work of `call()` or `apply()`.
+
+## bind(), call(), and apply() in JavaScript code
 
 But assigning this to a variable like we did with `newGreet` makes this easily
 **reusable** and **transferable**. In complex applications, there are times when
