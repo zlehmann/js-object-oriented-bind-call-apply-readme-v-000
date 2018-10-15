@@ -76,7 +76,7 @@ in as the first argument to these methods.
 > things that run, but also things like `{}` in JavaScript.
 
 Both `call` and `apply` give us a way to invoke a function and explicitly set
-its context (what `this` will equal) in thei first argument. The difference
+its context (what `this` will equal) in their first argument. The difference
 between the two is how arguments are passed to the function.
 
 #### Passing Arguments With `call` and `apply`
