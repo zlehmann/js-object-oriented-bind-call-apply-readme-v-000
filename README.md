@@ -75,8 +75,7 @@ in as the first argument to these methods.
 > Because of this a function instance _can also have methods_. Function's are
 > things that run, but also things like `{}` in JavaScript.
 
-Both `call` and `apply` give us a way to invoke a function and explicitly set
-its context (what `this` will equal) in the first argument. The difference
+Both `call` and `apply` let us set the value of `this` to whatever we pass as the first argument. The difference
 between the two is how arguments are passed to the function.
 
 #### Passing Arguments With `call` and `apply`
