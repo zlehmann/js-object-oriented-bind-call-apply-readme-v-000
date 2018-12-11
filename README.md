@@ -14,7 +14,7 @@ serve the provided `index.html`. The HTML file will automatically load
     arguments to the target function
 3.  Use `bind()` to create new functions that are associated to specified
     _contexts_
-3.  Use `bind()` to execute functions asynchronously
+4.  Use `bind()` to execute functions asynchronously
 
 ## Alternate Ways to Invoke Functions
 
@@ -44,13 +44,13 @@ the `greet()` is `window`. In browser-based JavaScript, `window` is the
 "_default context_."
 
 However, when `greet` is invoked as a method of _an object_, `this` changes to
-refer to the object the method is invoked in. That is the _context_
+refer to the object the method is invoked in. That is, the _context_
 automatically changes to be the containing object. Since `person` has a `name`
-property set, so `this.name` means the value 'bob'.
+property set, `this.name` refers to the value 'bob'.
 
 We've seen here that there are conditions where JavaScript will change the
 _context_ ("what `this` is set to) automatically. Developers can also force
-functions to be executed in other contexts.  Javascript allows us to do this
+functions to be executed in other contexts. Javascript allows us to do this
 using the `call` and `apply` methods.
 
 ```js
@@ -338,4 +338,3 @@ of functions with a new `this` value bound to the copy of the function.
 [arrows]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#No_separate_this
 
 <p class='util--hide'>View <a href='https://learn.co/lessons/js-object-oriented-bind-call-apply-readme'>Javascript bind call and apply</a> on Learn.co and start learning to code for free.</p>
-
