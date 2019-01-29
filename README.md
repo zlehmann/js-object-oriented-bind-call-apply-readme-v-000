@@ -72,7 +72,7 @@ specified _context_. The _context_ in which the function is to be run is passed
 in as the first argument to these methods.
 
 > **NOTE:** Our `greet` function is actually an instance of a `Function` class.
-> Because of this a function instance _can also have methods_. Function's are
+> Because of this a function instance _can also have methods_. Functions are
 > things that run, but also things like `{}` in JavaScript.
 
 Both `call` and `apply` let us set the value of `this` to whatever we pass as the first argument. The difference
